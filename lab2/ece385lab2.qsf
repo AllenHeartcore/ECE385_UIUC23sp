@@ -23,17 +23,17 @@ set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 set_global_assignment -name EDA_TEST_BENCH_ENABLE_STATUS TEST_BENCH_MODE -section_id eda_simulation
 set_global_assignment -name EDA_NATIVELINK_SIMULATION_TEST_BENCH testbench -section_id eda_simulation
 set_global_assignment -name EDA_TEST_BENCH_NAME testbench -section_id eda_simulation
+set_global_assignment -name EDA_TEST_BENCH_FILE bench/testbench_modelsim.sv -section_id testbench
 set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id testbench
 set_global_assignment -name EDA_TEST_BENCH_RUN_SIM_FOR "500 ns" -section_id testbench
 set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME testbench -section_id testbench
-set_global_assignment -name SYSTEMVERILOG_FILE ureg.sv
-set_global_assignment -name SYSTEMVERILOG_FILE uroute.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ucomp.sv
-set_global_assignment -name SYSTEMVERILOG_FILE uctrl.sv
-set_global_assignment -name SYSTEMVERILOG_FILE processor.sv
-set_global_assignment -name SYSTEMVERILOG_FILE periphery.sv
-set_global_assignment -name SIGNALTAP_FILE stp1.stp
-set_global_assignment -name SIGNALTAP_FILE testbench_signaltap.stp
+set_global_assignment -name SYSTEMVERILOG_FILE src/ureg.sv
+set_global_assignment -name SYSTEMVERILOG_FILE src/uroute.sv
+set_global_assignment -name SYSTEMVERILOG_FILE src/ucomp.sv
+set_global_assignment -name SYSTEMVERILOG_FILE src/uctrl.sv
+set_global_assignment -name SYSTEMVERILOG_FILE src/processor.sv
+set_global_assignment -name SYSTEMVERILOG_FILE src/periphery.sv
+set_global_assignment -name SIGNALTAP_FILE bench/testbench_signaltap.stp
 set_location_assignment PIN_B22 -to AhexL[6]
 set_location_assignment PIN_C22 -to AhexL[5]
 set_location_assignment PIN_B21 -to AhexL[4]
@@ -75,9 +75,8 @@ set_location_assignment PIN_B14 -to LoadB
 set_location_assignment PIN_A7 -to Execute
 set_location_assignment PIN_B8 -to Reset
 set_location_assignment PIN_P11 -to Clk
-set_global_assignment -name EDA_TEST_BENCH_FILE testbench_8bit.sv -section_id testbench
 set_global_assignment -name ENABLE_SIGNALTAP ON
-set_global_assignment -name USE_SIGNALTAP_FILE testbench_signaltap.stp
+set_global_assignment -name USE_SIGNALTAP_FILE bench/testbench_signaltap.stp
 set_global_assignment -name SLD_NODE_CREATOR_ID 110 -section_id auto_signaltap_0
 set_global_assignment -name SLD_NODE_ENTITY_NAME sld_signaltap -section_id auto_signaltap_0
 set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_ADVANCED_TRIGGER_ENTITY=basic,1," -section_id auto_signaltap_0
