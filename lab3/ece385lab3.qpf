@@ -1,0 +1,6 @@
+QUARTUS_VERSION = "18.1"
+DATE = "14:00:00  February 03, 2023"
+
+# Revisions
+
+PROJECT_REVISION = "ece385lab3"
