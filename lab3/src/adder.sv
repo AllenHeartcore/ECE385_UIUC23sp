@@ -1,12 +1,11 @@
 module Adder (
 	input  logic Run_key, Reset_key, Clk,
 	input  logic [9:0] Din,
-	output logic [16:0] rout,
 	output logic [9:0] LED,
 	output logic [6:0] HEX0, HEX1, HEX2, HEX3, HEX4, HEX5);
 
 	logic Load, Run, Reset;
-	logic [16:0] rin, sum;
+	logic [16:0] rin, rout, sum;
 	logic [15:0] Din_ext;
 
 	// buttons are active low

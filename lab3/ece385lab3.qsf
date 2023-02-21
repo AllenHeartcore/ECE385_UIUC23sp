@@ -23,6 +23,7 @@ set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id bench
 set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
+set_global_assignment -name SDC_FILE adder.out.sdc
 set_global_assignment -name SYSTEMVERILOG_FILE src/adder.sv
 set_global_assignment -name SYSTEMVERILOG_FILE src/cla.sv
 set_global_assignment -name SYSTEMVERILOG_FILE src/cra.sv
@@ -215,3 +216,5 @@ set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_ADVANCED_TRIGGER_
 set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_TRIGGER_LEVEL_PIPELINE=1" -section_id auto_signaltap_0
 set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_ENABLE_ADVANCED_TRIGGER=0" -section_id auto_signaltap_0
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
+set_global_assignment -name FLOW_ENABLE_POWER_ANALYZER ON
+set_global_assignment -name POWER_DEFAULT_INPUT_IO_TOGGLE_RATE "12.5 %"
