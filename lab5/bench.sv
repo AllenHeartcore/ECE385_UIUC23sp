@@ -26,7 +26,8 @@ module bench();
 `define NUM2  10'h0EB
 `define NUM3  10'h2CA
 `define NUM4  10'h1FE
-`define TICK  #80
+`define TICK  #120
+`define LTICK #1200
 `define RUN   `TICK Run = 0; `TICK Run = 1;
 `define CONT  `TICK Continue = 0; `TICK Continue = 1;
 `define RESET `TICK Run = 0; Continue = 0; `TICK Run = 1; Continue = 1;
@@ -93,12 +94,12 @@ module bench();
 		`RESET
 		`SETSW(10'h31)
 		`RUN
-		`SETSW(`NUM1) `CONT
-		`SETSW(`NUM2) `CONT
-		`TICK `CONT
-		`SETSW(`NUM3) `CONT
-		`SETSW(`NUM4) `CONT
-		`TICK `CONT
+		`SETSW(`NUM1 & 10'hFF) `CONT
+		`SETSW(`NUM2 & 10'hFF) `CONT
+		`LTICK `CONT
+		`SETSW(`NUM3 & 10'hFF) `CONT
+		`SETSW(`NUM4 & 10'hFF) `CONT
+		`LTICK `CONT
 
 		// Sort
 		`RESET
@@ -107,12 +108,15 @@ module bench();
 		`SETSW(10'h3) `CONT
 		for (int i = 0; i < 16; i++) begin
 			`CONT
-		end
+		end `CONT
 		`SETSW(10'h2) `CONT
+		#24000
 		`SETSW(10'h3) `CONT
 		for (int i = 0; i < 16; i++) begin
 			`CONT
-		end
+		end `CONT
+
+		`RESET
 
 `endif
 
