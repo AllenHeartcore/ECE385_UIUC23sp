@@ -34,7 +34,7 @@ set_global_assignment -name SYSTEMVERILOG_FILE src/ball.sv
 set_global_assignment -name SYSTEMVERILOG_FILE src/vga.sv
 set_global_assignment -name SYSTEMVERILOG_FILE src/utils.sv
 set_global_assignment -name QIP_FILE lab62_soc/synthesis/lab62_soc.qip
-set_global_assignment -name SDC_FILE lab6.sdc
+set_global_assignment -name SDC_FILE ece385lab6.sdc
 set_instance_assignment -name IO_STANDARD "3.3 V SCHMITT TRIGGER" -to KEY[0]
 set_instance_assignment -name IO_STANDARD "3.3 V SCHMITT TRIGGER" -to KEY[1]
 set_instance_assignment -name IO_STANDARD "3.3 V SCHMITT TRIGGER" -to ARDUINO_RESET_N

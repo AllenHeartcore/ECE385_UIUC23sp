@@ -30,8 +30,8 @@ set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -
 set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -fall
 set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "2.5 V"
 set_global_assignment -name SYSTEMVERILOG_FILE src/lab61.sv
-set_global_assignment -name QIP_FILE lab6_soc/synthesis/lab61_soc.qip
-set_global_assignment -name SDC_FILE lab6.sdc
+set_global_assignment -name QIP_FILE lab61_soc/synthesis/lab61_soc.qip
+set_global_assignment -name SDC_FILE ece385lab6.sdc
 set_instance_assignment -name IO_STANDARD "3.3 V SCHMITT TRIGGER" -to KEY[0]
 set_instance_assignment -name IO_STANDARD "3.3 V SCHMITT TRIGGER" -to KEY[1]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SW[0]
