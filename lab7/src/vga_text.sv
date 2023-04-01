@@ -20,7 +20,7 @@ module VGATextModeController (
 	logic [ 6:0] Char;
 	logic [ 3:0] ColorIdxFG, ColorIdxBG;
 	logic [11:0] ColorFG, ColorBG;
-	logic blank, Pixel, Inv;
+	logic pixel_clk, blank, Pixel, Inv;
 
 
 	/* clk, avl_* -> [RAM] -> avl_readdata */
@@ -70,7 +70,8 @@ module VGATextModeController (
 
 	/* clk, reset -> [VGACtrl] -> DrawX, DrawY, hs, vs */
 
-	VGACtrl vga (.Clk(clk), .Reset(reset), .DrawX, .DrawY, .hs, .vs, .blank);
+	VGACtrl vga (.Clk(clk), .Reset(reset), .pixel_clk,
+		.DrawX, .DrawY, .hs, .vs, .blank);
 	FontROM rom (.addr(rom_addr), .data(rom_data));
 
 
@@ -91,7 +92,7 @@ module VGATextModeController (
 		else				ColorBG = palette[ColorIdxBG[3:1]][12: 1];
 	end
 
-	always_ff @ (posedge clk) begin
+	always_ff @ (posedge pixel_clk) begin
 		if (reset || blank)		{red, green, blue} <= 12'h0;
 		else if (Pixel ^ Inv)	{red, green, blue} <= ColorFG;
 		else					{red, green, blue} <= ColorBG;
