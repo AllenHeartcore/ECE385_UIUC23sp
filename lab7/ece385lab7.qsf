@@ -25,6 +25,10 @@ set_global_assignment -name OUTPUT_IO_TIMING_NEAR_END_VMEAS "HALF VCCIO" -rise
 set_global_assignment -name OUTPUT_IO_TIMING_NEAR_END_VMEAS "HALF VCCIO" -fall
 set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -rise
 set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -fall
+set_global_assignment -name IP_TOOL_NAME "RAM: 2-PORT"
+set_global_assignment -name IP_TOOL_VERSION 18.1
+set_global_assignment -name IP_GENERATED_DEVICE_FAMILY "\{MAX 10\}"
+set_global_assignment -name VERILOG_FILE src/ram.v
 set_global_assignment -name SYSTEMVERILOG_FILE src/lab7.sv
 set_global_assignment -name SYSTEMVERILOG_FILE src/vga.sv
 set_global_assignment -name SYSTEMVERILOG_FILE src/vga_text.sv

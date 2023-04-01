@@ -19,6 +19,7 @@ set_fileset_property QUARTUS_SYNTH ENABLE_RELATIVE_INCLUDE_PATHS false
 set_fileset_property QUARTUS_SYNTH ENABLE_FILE_OVERWRITE_MODE false
 add_fileset_file vga_text.sv SYSTEM_VERILOG PATH src/vga_text.sv TOP_LEVEL_FILE
 add_fileset_file vga.sv SYSTEM_VERILOG PATH src/vga.sv
+add_fileset_file ram.v VERILOG PATH src/ram.v
 add_fileset_file font_rom.sv SYSTEM_VERILOG PATH src/font_rom.sv
 add_fileset_file utils.sv SYSTEM_VERILOG PATH src/utils.sv
 
@@ -28,6 +29,7 @@ set_fileset_property SIM_VERILOG ENABLE_RELATIVE_INCLUDE_PATHS false
 set_fileset_property SIM_VERILOG ENABLE_FILE_OVERWRITE_MODE false
 add_fileset_file vga_text.sv SYSTEM_VERILOG PATH src/vga_text.sv
 add_fileset_file vga.sv SYSTEM_VERILOG PATH src/vga.sv
+add_fileset_file ram.v VERILOG PATH src/ram.v
 add_fileset_file font_rom.sv SYSTEM_VERILOG PATH src/font_rom.sv
 add_fileset_file utils.sv SYSTEM_VERILOG PATH src/utils.sv
 
