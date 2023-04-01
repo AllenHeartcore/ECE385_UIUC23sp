@@ -75,7 +75,7 @@ set_interface_property avl_mm_slave PORT_NAME_MAP ""
 set_interface_property avl_mm_slave CMSIS_SVD_VARIABLES ""
 set_interface_property avl_mm_slave SVD_ADDRESS_GROUP ""
 
-add_interface_port avl_mm_slave avl_addr address Input 10
+add_interface_port avl_mm_slave avl_addr address Input 12
 add_interface_port avl_mm_slave avl_byte_en byteenable Input 4
 add_interface_port avl_mm_slave avl_cs chipselect Input 1
 add_interface_port avl_mm_slave avl_read read Input 1
