@@ -4,9 +4,7 @@
 module VGACtrl (
 	input  logic Clk, Reset,
 	output logic [9:0] DrawX, DrawY,
-	output logic hs, vs, blank);
-
-	logic pixel_clk;
+	output logic pixel_clk, hs, vs, blank);
 
 	always_ff @ (posedge Clk or posedge Reset) begin
 		if (Reset) pixel_clk <= 0;
