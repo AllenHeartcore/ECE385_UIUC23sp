@@ -27,10 +27,13 @@ void textVGAColorDrawText(char* str, int x, int y, alt_u8 background, alt_u8 for
 void textVGAColorSetPalette(alt_u8 color, alt_u8 red, alt_u8 green, alt_u8 blue) {
 	alt_u32 tmp;
 	tmp = vga_ctrl->palette[color / 2];
-	if (color % 2)
+	if (color % 2) {
+		tmp &= 0xFE001FFF;
 		tmp |= (red << 21) | (green << 17) | (blue << 13);
-	else
+	} else {
+		tmp &= 0xFFFFE001;
 		tmp |= (red <<  9) | (green <<  5) | (blue <<  1);
+	}
 	vga_ctrl->palette[color / 2] = tmp;
 }
 
