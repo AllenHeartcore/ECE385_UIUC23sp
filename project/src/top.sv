@@ -1,10 +1,10 @@
 module ece385proj (
-	input  logic MAX10_CLK1_50,
+	input  logic MAX10_CLK1_50, MAX10_CLK2_50,
 	input  logic [ 1:0] KEY,
-	output logic [ 7:0] LEDR,
-	output logic [ 7:0] HEX0, HEX1, HEX2, HEX3, HEX4, HEX5,
+	output logic [ 9:0] LEDR,
+	output logic [ 6:0] HEX0, HEX1, HEX2, HEX3, HEX4, HEX5,
 
-	inout  logic [15:0] DRAM_DQ,
+	inout  wire  [15:0] DRAM_DQ,
 	output logic [12:0] DRAM_ADDR,
 	output logic [ 1:0] DRAM_BA,
 	output logic DRAM_LDQM, DRAM_UDQM, DRAM_RAS_N, DRAM_CAS_N,
@@ -17,35 +17,55 @@ module ece385proj (
 	inout  logic ARDUINO_RESET_N);
 
 
+	/* Arduino IO assignments
+	 * [15-14]: I2C_SCL,  I2C_SDA,
+	 * [13-10]: SPI_SCLK, SPI_MISO,  SPI_MOSI, SPI_CS_N,
+	 * [ 9- 6]: USB_IRQ,  USB_GPX,   USB_RST,  uSD_CS,
+	 * [ 5- 0]: I2S_SCLK, I2S_LRCLK, I2S_MCLK, I2S_DIN, I2S_DOUT, (unused)
+	 */
+
+	logic i2c_serial_scl_in, i2c_serial_scl_oe;
+	logic i2c_serial_sda_in, i2c_serial_sda_oe;
+	logic SPI_CS_N, SPI_SCLK, SPI_MISO, SPI_MOSI;
 	logic USB_GPX, USB_IRQ, USB_RST;
-	logic SPI0_CS_N, SPI0_SCLK, SPI0_MISO, SPI0_MOSI;
-	logic [ 9:0] DrawX, DrawY, BallX, BallY, BallS;
+	logic I2S_SCLK, I2S_LRCLK, I2S_DIN, I2S_DOUT;
+	logic [ 1:0] aud_mclk_ctr;
+	logic [23:0] hexnum;
 	logic [ 7:0] keycode;
-	logic [ 1:0] signs, hundreds;
-	logic [15:0] hexnum;
 
-	assign ARDUINO_IO[13:6] = {SPI0_SCLK, 1'bZ, SPI0_MOSI, SPI0_CS_N, 1'bZ, 1'bZ, USB_RST, 1'b1};
-	assign ARDUINO_RESET_N = USB_RST;
-	assign SPI0_MISO = ARDUINO_IO[12];
-	assign USB_IRQ = ARDUINO_IO[9];
-	assign USB_GPX = 1'b0;
+	assign ARDUINO_IO[15:1] = {
+		i2c_serial_scl_oe ? 1'b0 : 1'bZ,
+		i2c_serial_sda_oe ? 1'b0 : 1'bZ,
+		SPI_SCLK, 1'bZ, SPI_MOSI, SPI_CS_N,
+		1'bZ, 1'bZ, USB_RST, 1'b1,
+		1'bZ, 1'bZ, aud_mclk_ctr[1], I2S_DIN, 1'bZ};
 
-	HexDriver hexdriver[4] (hexnum, {HEX4[6:0], HEX3[6:0], HEX1[6:0], HEX0[6:0]});
-	assign {HEX4[7], HEX3[7], HEX1[7], HEX0[7]} = 4'b1111;
-	assign HEX5 = {1'b1, ~signs[1], 3'b111, ~hundreds[1], ~hundreds[1], 1'b1};
-	assign HEX2 = {1'b1, ~signs[0], 3'b111, ~hundreds[0], ~hundreds[0], 1'b1};
+	assign ARDUINO_RESET_N   = USB_RST;
+	assign i2c_serial_scl_in = ARDUINO_IO[15];
+	assign i2c_serial_sda_in = ARDUINO_IO[14];
+	assign SPI_MISO  = ARDUINO_IO[12];
+	assign USB_IRQ   = ARDUINO_IO[9];
+	assign I2S_SCLK  = ARDUINO_IO[5];
+	assign I2S_LRCLK = ARDUINO_IO[4];
+	assign I2S_DOUT  = ARDUINO_IO[1];
+	assign USB_GPX   = 1'b0;
+
+	always_ff @ (posedge MAX10_CLK2_50) begin
+		aud_mclk_ctr <= aud_mclk_ctr + 1;
+	end
+
+
+	HexDriver hexdriver[6] (hexnum, {HEX5, HEX4, HEX3, HEX2, HEX1, HEX0});
 
 
 	proj_soc m_proj_soc (
 		.clk_clk(MAX10_CLK1_50),
 		.reset_reset_n(1'b1),
-		.altpll_0_locked_conduit_export(),
-		.altpll_0_phasedone_conduit_export(),
-		.altpll_0_areset_conduit_export(),
 
-		.hex_digits_export(hexnum),
-		.leds_export({hundreds, signs, LEDR}),
-		.key_external_connection_export(KEY),
+		.hex_export(hexnum),
+		.led_export(LEDR),
+		.key_export(KEY),
+		.keycode_export(keycode),
 
 		.sdram_clk_clk   (DRAM_CLK),
 		.sdram_wire_dq   (DRAM_DQ),
@@ -64,15 +84,19 @@ module ece385proj (
 		.vga_port_hs   (VGA_HS),
 		.vga_port_vs   (VGA_VS),
 
-		.spi0_SS_n(SPI0_CS_N),
-		.spi0_SCLK(SPI0_SCLK),
-		.spi0_MOSI(SPI0_MOSI),
-		.spi0_MISO(SPI0_MISO),
+		.spi_SS_n(SPI_CS_N),
+		.spi_SCLK(SPI_SCLK),
+		.spi_MOSI(SPI_MOSI),
+		.spi_MISO(SPI_MISO),
 
-		.keycode_export(keycode),
 		.usb_irq_export(USB_IRQ),
 		.usb_gpx_export(USB_GPX),
-		.usb_rst_export(USB_RST));
+		.usb_rst_export(USB_RST),
+
+		.i2c_serial_scl_in,
+		.i2c_serial_scl_oe,
+		.i2c_serial_sda_in,
+		.i2c_serial_sda_oe);
 
 
 endmodule

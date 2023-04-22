@@ -18,6 +18,7 @@ set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 
 set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
 set_global_assignment -name QIP_FILE proj_soc/synthesis/proj_soc.qip
 set_global_assignment -name SYSTEMVERILOG_FILE src/top.sv
+set_global_assignment -name SYSTEMVERILOG_FILE src/audio.sv
 set_global_assignment -name SYSTEMVERILOG_FILE src/utils.sv
 set_instance_assignment -name IO_STANDARD "3.3 V SCHMITT TRIGGER" -to KEY[0]
 set_instance_assignment -name IO_STANDARD "3.3 V SCHMITT TRIGGER" -to KEY[1]

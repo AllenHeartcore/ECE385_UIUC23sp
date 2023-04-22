@@ -3,6 +3,8 @@
 #include "altera_avalon_spi.h"
 #include "altera_avalon_spi_regs.h"
 #include "altera_avalon_pio_regs.h"
+#include "altera_avalon_i2c.h"
+#include "altera_avalon_i2c_regs.h"
 #include "sys/alt_irq.h"
 
 #include "usb_kb/GenericMacros.h"
@@ -12,15 +14,15 @@
 #include "usb_kb/transfer.h"
 #include "usb_kb/usb_ch9.h"
 #include "usb_kb/USB.h"
+#include "audio/GenericTypeDefs.h"
+#include "audio/sgtl5000.h"
 #include "tptp.h"
-
 
 
 extern HID_DEVICE hid_device;
 static BYTE addr = 1;
 const char* const devclasses[] = {
 	"Uninitialized", "HID Keyboard", "HID Mouse", "Mass storage" };
-
 
 
 BYTE GetDriverandReport() {
@@ -63,82 +65,25 @@ BYTE GetDriverandReport() {
 }
 
 
+void outputHex(int value) {
+	BYTE digit;
+	DWORD pio_val = 0x000000;
 
-void setLED(int LED) {
-	IOWR_ALTERA_AVALON_PIO_DATA(PIO_LED_BASE,
-		(IORD_ALTERA_AVALON_PIO_DATA(PIO_LED_BASE) | (0x001 << LED)));
-}
-
-
-
-void clearLED(int LED) {
-	IOWR_ALTERA_AVALON_PIO_DATA(PIO_LED_BASE,
-		(IORD_ALTERA_AVALON_PIO_DATA(PIO_LED_BASE) & ~(0x001 << LED)));
-
-}
-
-
-
-void printSignedHex0(signed char value) {
-	BYTE tens = 0;
-	BYTE ones = 0;
-	WORD pio_val = IORD_ALTERA_AVALON_PIO_DATA(PIO_HEX_BASE);
-	if (value < 0) {
-		setLED(11);
-		value = -value;
-	} else {
-		clearLED(11);
+	for (int i = 0; i < 6; i++) {
+		digit = value % 10;
+		value /= 10;
+		pio_val <<= 4;
+		pio_val |= digit;
 	}
-	if (value / 100)
-		setLED(13);
-	else
-		clearLED(13);
-
-	value = value % 100;
-	tens = value / 10;
-	ones = value % 10;
-
-	pio_val &= 0x00FF;
-	pio_val |= (tens << 12);
-	pio_val |= (ones << 8);
 
 	IOWR_ALTERA_AVALON_PIO_DATA(PIO_HEX_BASE, pio_val);
 }
 
-
-
-void printSignedHex1(signed char value) {
-	BYTE tens = 0;
-	BYTE ones = 0;
-	DWORD pio_val = IORD_ALTERA_AVALON_PIO_DATA(PIO_HEX_BASE);
-	if (value < 0) {
-		setLED(10);
-		value = -value;
-	} else {
-		clearLED(10);
-	}
-	if (value / 100)
-		setLED(12);
-	else
-		clearLED(12);
-
-	value = value % 100;
-	tens = value / 10;
-	ones = value % 10;
-	tens = value / 10;
-	ones = value % 10;
-
-	pio_val &= 0xFF00;
-	pio_val |= (tens << 4);
-	pio_val |= (ones << 0);
-
-	IOWR_ALTERA_AVALON_PIO_DATA(PIO_HEX_BASE, pio_val);
+void setKeycode(WORD keycode)
+{
+	IOWR_ALTERA_AVALON_PIO_DATA(PIO_KEYCODE_BASE, keycode);
 }
 
-
-
-
-/* -------------------- CANVAS REGISTER UTILITIES -------------------- */
 
 void setKeyReg(int idx) {
 	vga_ctrl[idx] = (
@@ -152,6 +97,7 @@ void setScoreReg() {
 	vga_ctrl[0]  = (BYTE) ( score & 0xFF);
 	vga_ctrl[1]  = (BYTE) ((score >> 8) & 0xFF);
 	vga_ctrl[2]  = (BYTE) ((score >> 16) & 0xFF);
+	outputHex(score);
 }
 
 void setAccReg() {
@@ -184,11 +130,6 @@ void setLostRegs() {
 	setComboReg();
 }
 
-/* ----------------- CANVAS REGISTER UTILITIES: DONE ----------------- */
-
-
-
-/* ----------------- SCOREKEEPER & KEYSTAT UTILITIES ----------------- */
 
 void setPureFarScorekeepers(int error, char *msg) {
 	if (error < THRES_PURE) {
@@ -214,6 +155,7 @@ void setLostScorekeepers() {
 	combo = 0;
 	acc = tacc / (nmpure + npure + nfar + nlost);
 }
+
 
 void setEnterKeystat(int idx, int timestamp) {
 	keystats[idx].brght = BRIGHTEST;
@@ -284,9 +226,6 @@ void updateKeystats() {
 	}
 }
 
-/* -------------- SCOREKEEPER & KEYSTAT UTILITIES: DONE -------------- */
-
-
 
 note_t pop_note(note_t *chart, int idx, int *nkey) {
 	note_t note = chart[idx];
@@ -296,7 +235,6 @@ note_t pop_note(note_t *chart, int idx, int *nkey) {
 	(*nkey)--;
 	return note;
 }
-
 
 
 int main() {
@@ -310,10 +248,8 @@ int main() {
 	MAX3421E_init();
 	printf("initializing USB...\n");
 	USB_init();
-
-
-
-/* ----------------------- GAME INITIALIZATION ----------------------- */
+	printf("initializing SGTL5000...\n");
+	SGTL5000_init();
 
 	gettimeofday(&start, NULL);
 	for (int i = 0; i < NREG; i++) {
@@ -323,10 +259,6 @@ int main() {
 		keystats[i].phase = PHASE_IDLE;
 	}
 
-/* -------------------- GAME INITIALIZATION: DONE -------------------- */
-
-
-
 	while (1) {
 		MAX3421E_Task();
 		USB_Task();
@@ -334,7 +266,6 @@ int main() {
 		if (GetUsbTaskState() == USB_STATE_RUNNING) {
 			if (!runningdebugflag) {
 				runningdebugflag = 1;
-				setLED(9);
 				device = GetDriverandReport();
 			} else if (device == 1) {
 				rcode = kbdPoll(&kbdbuf);
@@ -346,10 +277,6 @@ int main() {
 					continue;
 				}
 
-
-
-/* -------------------- KEYCODE-DRIVEN GAME LOGIC -------------------- */
-
 				printf("---------- TrapoTempo now starts ----------\n");
 				while (1) {
 					kbdPoll(&kbdbuf);
@@ -359,7 +286,6 @@ int main() {
 						int8_t key = (int8_t)kbdbuf.keycode[i];
 						if (key > 0) {
 							touches[ntouch++] = (note_t){gametime, key};
-							// LOG(gametime, "Touch", key);
 							setTouchKeystat(key);
 						}
 					}
@@ -407,29 +333,18 @@ int main() {
 								setPureFarRegs();
 								pop_note(chart, best_i, &(nkey));
 								LOG(touch.time, msg, valid_keys[touch.key]);
-
-							/* Mistouch */
-							} else {
-								// LOG(touch.time, "Mistouch", valid_keys[touch.key]);
 							}
+
 						}
 					}
-
 					updateKeystats();
-					printSignedHex0(kbdbuf.keycode[0]);
-					printSignedHex1(kbdbuf.keycode[1]);
+					setKeycode(kbdbuf.keycode[0]);
 				}
-
-/* ----------------- KEYCODE-DRIVEN GAME LOGIC: DONE ----------------- */
-
-
-
 			}
 
 		} else if (GetUsbTaskState() == USB_STATE_ERROR) {
 			if (!errorflag) {
 				errorflag = 1;
-				clearLED(9);
 				printf("USB Error State\n");
 			}
 
@@ -442,7 +357,6 @@ int main() {
 				USB_init();
 			}
 			errorflag = 0;
-			clearLED(9);
 		}
 
 	}

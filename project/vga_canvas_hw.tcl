@@ -20,7 +20,6 @@ set_fileset_property QUARTUS_SYNTH ENABLE_FILE_OVERWRITE_MODE false
 add_fileset_file canvas.sv SYSTEM_VERILOG PATH src/canvas.sv TOP_LEVEL_FILE
 add_fileset_file vga.sv SYSTEM_VERILOG PATH src/vga.sv
 add_fileset_file rom.sv SYSTEM_VERILOG PATH src/rom.sv
-add_fileset_file utils.sv SYSTEM_VERILOG PATH src/utils.sv
 
 add_fileset SIM_VERILOG SIM_VERILOG "" ""
 set_fileset_property SIM_VERILOG TOP_LEVEL VGATextModeController
@@ -29,7 +28,6 @@ set_fileset_property SIM_VERILOG ENABLE_FILE_OVERWRITE_MODE false
 add_fileset_file canvas.sv SYSTEM_VERILOG PATH src/canvas.sv
 add_fileset_file vga.sv SYSTEM_VERILOG PATH src/vga.sv
 add_fileset_file rom.sv SYSTEM_VERILOG PATH src/rom.sv
-add_fileset_file utils.sv SYSTEM_VERILOG PATH src/utils.sv
 
 add_interface clk clock end
 set_interface_property clk clockRate 50000000

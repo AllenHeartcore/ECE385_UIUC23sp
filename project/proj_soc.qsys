@@ -17,6 +17,27 @@
          type = "int";
       }
    }
+   element i2c
+   {
+      datum _sortIndex
+      {
+         value = "8";
+         type = "int";
+      }
+   }
+   element i2c.csr
+   {
+      datum _lockedAddress
+      {
+         value = "1";
+         type = "boolean";
+      }
+      datum baseAddress
+      {
+         value = "320";
+         type = "String";
+      }
+   }
    element jtag_uart
    {
       datum _sortIndex
@@ -68,7 +89,7 @@
    {
       datum _sortIndex
       {
-         value = "12";
+         value = "9";
          type = "int";
       }
    }
@@ -89,7 +110,7 @@
    {
       datum _sortIndex
       {
-         value = "14";
+         value = "11";
          type = "int";
       }
    }
@@ -110,7 +131,7 @@
    {
       datum _sortIndex
       {
-         value = "8";
+         value = "12";
          type = "int";
       }
    }
@@ -131,7 +152,7 @@
    {
       datum _sortIndex
       {
-         value = "13";
+         value = "10";
          type = "int";
       }
    }
@@ -152,7 +173,7 @@
    {
       datum _sortIndex
       {
-         value = "10";
+         value = "14";
          type = "int";
       }
    }
@@ -173,7 +194,7 @@
    {
       datum _sortIndex
       {
-         value = "9";
+         value = "13";
          type = "int";
       }
    }
@@ -194,7 +215,7 @@
    {
       datum _sortIndex
       {
-         value = "11";
+         value = "15";
          type = "int";
       }
    }
@@ -278,7 +299,7 @@
    {
       datum _sortIndex
       {
-         value = "15";
+         value = "16";
          type = "int";
       }
    }
@@ -360,12 +381,13 @@
  <instanceScript></instanceScript>
  <interface name="clk" internal="clk.clk_in" type="clock" dir="end" />
  <interface
-   name="hex_digits"
+   name="hex"
    internal="pio_hex.external_connection"
    type="conduit"
    dir="end" />
+ <interface name="i2c_serial" internal="i2c.i2c_serial" type="conduit" dir="end" />
  <interface
-   name="key_external_connection"
+   name="key"
    internal="pio_key.external_connection"
    type="conduit"
    dir="end" />
@@ -375,14 +397,14 @@
    type="conduit"
    dir="end" />
  <interface
-   name="leds"
+   name="led"
    internal="pio_led.external_connection"
    type="conduit"
    dir="end" />
  <interface name="reset" internal="clk.clk_in_reset" type="reset" dir="end" />
  <interface name="sdram_clk" internal="pll.c1" type="clock" dir="start" />
  <interface name="sdram_wire" internal="sdram.wire" type="conduit" dir="end" />
- <interface name="spi0" internal="spi.external" type="conduit" dir="end" />
+ <interface name="spi" internal="spi.external" type="conduit" dir="end" />
  <interface
    name="usb_gpx"
    internal="pio_usb_gpx.external_connection"
@@ -408,6 +430,11 @@
   <parameter name="clockFrequencyKnown" value="true" />
   <parameter name="inputClockFrequency" value="0" />
   <parameter name="resetSynchronousEdges" value="NONE" />
+ </module>
+ <module name="i2c" kind="altera_avalon_i2c" version="18.1" enabled="1">
+  <parameter name="FIFO_DEPTH" value="4" />
+  <parameter name="USE_AV_ST" value="0" />
+  <parameter name="clockRate" value="50000000" />
  </module>
  <module
    name="jtag_uart"
@@ -448,7 +475,7 @@
   <parameter name="dataAddrWidth" value="28" />
   <parameter name="dataMasterHighPerformanceAddrWidth" value="1" />
   <parameter name="dataMasterHighPerformanceMapParam" value="" />
-  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='timer.s1' start='0x0' end='0x40' type='altera_avalon_timer.s1' /><slave name='spi.spi_control_port' start='0x40' end='0x60' type='altera_avalon_spi.spi_control_port' /><slave name='pll.pll_slave' start='0x60' end='0x70' type='altpll.pll_slave' /><slave name='jtag_uart.avalon_jtag_slave' start='0x70' end='0x78' type='altera_avalon_jtag_uart.avalon_jtag_slave' /><slave name='sysid.control_slave' start='0x78' end='0x80' type='altera_avalon_sysid_qsys.control_slave' /><slave name='pio_hex.s1' start='0x80' end='0x90' type='altera_avalon_pio.s1' /><slave name='pio_led.s1' start='0x90' end='0xA0' type='altera_avalon_pio.s1' /><slave name='pio_key.s1' start='0xA0' end='0xB0' type='altera_avalon_pio.s1' /><slave name='pio_keycode.s1' start='0xB0' end='0xC0' type='altera_avalon_pio.s1' /><slave name='pio_usb_irq.s1' start='0xC0' end='0xD0' type='altera_avalon_pio.s1' /><slave name='pio_usb_gpx.s1' start='0xD0' end='0xE0' type='altera_avalon_pio.s1' /><slave name='pio_usb_rst.s1' start='0xE0' end='0xF0' type='altera_avalon_pio.s1' /><slave name='vga_canvas.avl_mm_slave' start='0x100' end='0x140' type='vga_canvas.avl_mm_slave' /><slave name='nios2.debug_mem_slave' start='0x1000' end='0x1800' type='altera_nios2_gen2.debug_mem_slave' /><slave name='sdram.s1' start='0x8000000' end='0xC000000' type='altera_avalon_new_sdram_controller.s1' /></address-map>]]></parameter>
+  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='timer.s1' start='0x0' end='0x40' type='altera_avalon_timer.s1' /><slave name='spi.spi_control_port' start='0x40' end='0x60' type='altera_avalon_spi.spi_control_port' /><slave name='pll.pll_slave' start='0x60' end='0x70' type='altpll.pll_slave' /><slave name='jtag_uart.avalon_jtag_slave' start='0x70' end='0x78' type='altera_avalon_jtag_uart.avalon_jtag_slave' /><slave name='sysid.control_slave' start='0x78' end='0x80' type='altera_avalon_sysid_qsys.control_slave' /><slave name='pio_hex.s1' start='0x80' end='0x90' type='altera_avalon_pio.s1' /><slave name='pio_led.s1' start='0x90' end='0xA0' type='altera_avalon_pio.s1' /><slave name='pio_key.s1' start='0xA0' end='0xB0' type='altera_avalon_pio.s1' /><slave name='pio_keycode.s1' start='0xB0' end='0xC0' type='altera_avalon_pio.s1' /><slave name='pio_usb_irq.s1' start='0xC0' end='0xD0' type='altera_avalon_pio.s1' /><slave name='pio_usb_gpx.s1' start='0xD0' end='0xE0' type='altera_avalon_pio.s1' /><slave name='pio_usb_rst.s1' start='0xE0' end='0xF0' type='altera_avalon_pio.s1' /><slave name='vga_canvas.avl_mm_slave' start='0x100' end='0x140' type='vga_canvas.avl_mm_slave' /><slave name='i2c.csr' start='0x140' end='0x180' type='altera_avalon_i2c.csr' /><slave name='nios2.debug_mem_slave' start='0x1000' end='0x1800' type='altera_nios2_gen2.debug_mem_slave' /><slave name='sdram.s1' start='0x8000000' end='0xC000000' type='altera_avalon_new_sdram_controller.s1' /></address-map>]]></parameter>
   <parameter name="data_master_high_performance_paddr_base" value="0" />
   <parameter name="data_master_high_performance_paddr_size" value="0" />
   <parameter name="data_master_paddr_base" value="0" />
@@ -494,7 +521,7 @@
   <parameter name="instruction_master_high_performance_paddr_size" value="0" />
   <parameter name="instruction_master_paddr_base" value="0" />
   <parameter name="instruction_master_paddr_size" value="0" />
-  <parameter name="internalIrqMaskSystemInfo" value="14" />
+  <parameter name="internalIrqMaskSystemInfo" value="15" />
   <parameter name="io_regionbase" value="0" />
   <parameter name="io_regionsize" value="0" />
   <parameter name="master_addr_map" value="false" />
@@ -618,7 +645,7 @@
   <parameter name="resetValue" value="0" />
   <parameter name="simDoTestBenchWiring" value="false" />
   <parameter name="simDrivenValue" value="0" />
-  <parameter name="width" value="16" />
+  <parameter name="width" value="24" />
  </module>
  <module name="pio_key" kind="altera_avalon_pio" version="18.1" enabled="1">
   <parameter name="bitClearingEdgeCapReg" value="false" />
@@ -664,7 +691,7 @@
   <parameter name="resetValue" value="0" />
   <parameter name="simDoTestBenchWiring" value="false" />
   <parameter name="simDrivenValue" value="0" />
-  <parameter name="width" value="14" />
+  <parameter name="width" value="10" />
  </module>
  <module
    name="pio_usb_gpx"
@@ -979,6 +1006,11 @@
   <parameter name="baseAddress" value="0x0078" />
   <parameter name="defaultConnection" value="false" />
  </connection>
+ <connection kind="avalon" version="18.1" start="nios2.data_master" end="i2c.csr">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x0140" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
  <connection
    kind="avalon"
    version="18.1"
@@ -1047,18 +1079,18 @@
    kind="avalon"
    version="18.1"
    start="nios2.data_master"
-   end="pio_key.s1">
+   end="pio_usb_rst.s1">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x00a0" />
+  <parameter name="baseAddress" value="0x00e0" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
    kind="avalon"
    version="18.1"
    start="nios2.data_master"
-   end="pio_usb_rst.s1">
+   end="pio_key.s1">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x00e0" />
+  <parameter name="baseAddress" value="0x00a0" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -1099,19 +1131,27 @@
  </connection>
  <connection kind="clock" version="18.1" start="pll.c0" end="sdram.clk" />
  <connection kind="clock" version="18.1" start="clk.clk" end="nios2.clk" />
- <connection kind="clock" version="18.1" start="clk.clk" end="sysid.clk" />
- <connection kind="clock" version="18.1" start="clk.clk" end="spi.clk" />
- <connection kind="clock" version="18.1" start="clk.clk" end="timer.clk" />
- <connection kind="clock" version="18.1" start="clk.clk" end="jtag_uart.clk" />
- <connection kind="clock" version="18.1" start="clk.clk" end="pio_hex.clk" />
- <connection kind="clock" version="18.1" start="clk.clk" end="pio_usb_irq.clk" />
- <connection kind="clock" version="18.1" start="clk.clk" end="pio_led.clk" />
- <connection kind="clock" version="18.1" start="clk.clk" end="pio_keycode.clk" />
- <connection kind="clock" version="18.1" start="clk.clk" end="pio_usb_gpx.clk" />
- <connection kind="clock" version="18.1" start="clk.clk" end="pio_key.clk" />
- <connection kind="clock" version="18.1" start="clk.clk" end="pio_usb_rst.clk" />
  <connection kind="clock" version="18.1" start="clk.clk" end="vga_canvas.clk" />
+ <connection kind="clock" version="18.1" start="clk.clk" end="jtag_uart.clk" />
+ <connection kind="clock" version="18.1" start="clk.clk" end="timer.clk" />
+ <connection kind="clock" version="18.1" start="clk.clk" end="spi.clk" />
+ <connection kind="clock" version="18.1" start="clk.clk" end="pio_hex.clk" />
+ <connection kind="clock" version="18.1" start="clk.clk" end="pio_led.clk" />
+ <connection kind="clock" version="18.1" start="clk.clk" end="pio_key.clk" />
+ <connection kind="clock" version="18.1" start="clk.clk" end="pio_keycode.clk" />
+ <connection kind="clock" version="18.1" start="clk.clk" end="pio_usb_irq.clk" />
+ <connection kind="clock" version="18.1" start="clk.clk" end="pio_usb_gpx.clk" />
+ <connection kind="clock" version="18.1" start="clk.clk" end="pio_usb_rst.clk" />
+ <connection kind="clock" version="18.1" start="clk.clk" end="sysid.clk" />
+ <connection kind="clock" version="18.1" start="clk.clk" end="i2c.clock" />
  <connection kind="clock" version="18.1" start="clk.clk" end="pll.inclk_interface" />
+ <connection
+   kind="interrupt"
+   version="18.1"
+   start="nios2.irq"
+   end="i2c.interrupt_sender">
+  <parameter name="irqNumber" value="0" />
+ </connection>
  <connection kind="interrupt" version="18.1" start="nios2.irq" end="spi.irq">
   <parameter name="irqNumber" value="3" />
  </connection>
@@ -1127,22 +1167,22 @@
    start="clk.clk_reset"
    end="pll.inclk_interface_reset" />
  <connection kind="reset" version="18.1" start="clk.clk_reset" end="nios2.reset" />
- <connection kind="reset" version="18.1" start="clk.clk_reset" end="sysid.reset" />
  <connection kind="reset" version="18.1" start="clk.clk_reset" end="sdram.reset" />
- <connection kind="reset" version="18.1" start="clk.clk_reset" end="spi.reset" />
- <connection kind="reset" version="18.1" start="clk.clk_reset" end="timer.reset" />
+ <connection
+   kind="reset"
+   version="18.1"
+   start="clk.clk_reset"
+   end="vga_canvas.reset" />
  <connection
    kind="reset"
    version="18.1"
    start="clk.clk_reset"
    end="jtag_uart.reset" />
+ <connection kind="reset" version="18.1" start="clk.clk_reset" end="timer.reset" />
+ <connection kind="reset" version="18.1" start="clk.clk_reset" end="spi.reset" />
  <connection kind="reset" version="18.1" start="clk.clk_reset" end="pio_hex.reset" />
- <connection
-   kind="reset"
-   version="18.1"
-   start="clk.clk_reset"
-   end="pio_usb_irq.reset" />
  <connection kind="reset" version="18.1" start="clk.clk_reset" end="pio_led.reset" />
+ <connection kind="reset" version="18.1" start="clk.clk_reset" end="pio_key.reset" />
  <connection
    kind="reset"
    version="18.1"
@@ -1152,18 +1192,23 @@
    kind="reset"
    version="18.1"
    start="clk.clk_reset"
+   end="pio_usb_irq.reset" />
+ <connection
+   kind="reset"
+   version="18.1"
+   start="clk.clk_reset"
    end="pio_usb_gpx.reset" />
- <connection kind="reset" version="18.1" start="clk.clk_reset" end="pio_key.reset" />
  <connection
    kind="reset"
    version="18.1"
    start="clk.clk_reset"
    end="pio_usb_rst.reset" />
+ <connection kind="reset" version="18.1" start="clk.clk_reset" end="sysid.reset" />
  <connection
    kind="reset"
    version="18.1"
    start="clk.clk_reset"
-   end="vga_canvas.reset" />
+   end="i2c.reset_sink" />
  <connection
    kind="reset"
    version="18.1"
@@ -1178,22 +1223,12 @@
    kind="reset"
    version="18.1"
    start="nios2.debug_reset_request"
-   end="sysid.reset" />
- <connection
-   kind="reset"
-   version="18.1"
-   start="nios2.debug_reset_request"
    end="sdram.reset" />
  <connection
    kind="reset"
    version="18.1"
    start="nios2.debug_reset_request"
-   end="spi.reset" />
- <connection
-   kind="reset"
-   version="18.1"
-   start="nios2.debug_reset_request"
-   end="timer.reset" />
+   end="vga_canvas.reset" />
  <connection
    kind="reset"
    version="18.1"
@@ -1203,12 +1238,17 @@
    kind="reset"
    version="18.1"
    start="nios2.debug_reset_request"
-   end="pio_hex.reset" />
+   end="timer.reset" />
  <connection
    kind="reset"
    version="18.1"
    start="nios2.debug_reset_request"
-   end="pio_usb_irq.reset" />
+   end="spi.reset" />
+ <connection
+   kind="reset"
+   version="18.1"
+   start="nios2.debug_reset_request"
+   end="pio_hex.reset" />
  <connection
    kind="reset"
    version="18.1"
@@ -1218,7 +1258,17 @@
    kind="reset"
    version="18.1"
    start="nios2.debug_reset_request"
+   end="pio_key.reset" />
+ <connection
+   kind="reset"
+   version="18.1"
+   start="nios2.debug_reset_request"
    end="pio_keycode.reset" />
+ <connection
+   kind="reset"
+   version="18.1"
+   start="nios2.debug_reset_request"
+   end="pio_usb_irq.reset" />
  <connection
    kind="reset"
    version="18.1"
@@ -1228,17 +1278,17 @@
    kind="reset"
    version="18.1"
    start="nios2.debug_reset_request"
-   end="pio_key.reset" />
- <connection
-   kind="reset"
-   version="18.1"
-   start="nios2.debug_reset_request"
    end="pio_usb_rst.reset" />
  <connection
    kind="reset"
    version="18.1"
    start="nios2.debug_reset_request"
-   end="vga_canvas.reset" />
+   end="sysid.reset" />
+ <connection
+   kind="reset"
+   version="18.1"
+   start="nios2.debug_reset_request"
+   end="i2c.reset_sink" />
  <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
  <interconnectRequirement for="$system" name="qsys_mm.enableEccProtection" value="FALSE" />
  <interconnectRequirement for="$system" name="qsys_mm.insertDefaultSlave" value="FALSE" />
