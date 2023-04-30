@@ -41,7 +41,9 @@ timeval_t start, now;
 
 #define NKEY 72
 
-note_t chart[NKEY] = {
+note_t chart[NKEY];
+
+note_t chart_storage[NKEY] = {
 	{  750, 22}, {  938,  7}, { 1125,  9}, { 1219, 10},
 	{ 1406, 11}, { 1594, 13}, { 1781, 14}, { 1875, 15},
 	{ 2063, 51}, { 2250, 19}, { 2438, 18}, { 2625, 12},
@@ -66,13 +68,37 @@ note_t chart[NKEY] = {
 
 /* Scorekeeper */
 
+#define GST_IDLE    0x00
+#define GST_CONFIG  0x04
+#define GST_PLAY    0x08
+#define GST_REPORT  0x0C
+
+#define DLIFE_TICK  1
+#define DLIFE_PURE  12
+#define DLIFE_FAR   6
+#define DLIFE_LOST  -16
+#define DLIFE_BOOST 75
+#define LIFE_MAX    255
+#define LIFE_MIN    0
+
+#define DSKILL_PURE 24
+#define DSKILL_FAR  12
+#define DSKILL_TICK -4
+#define SKILL_MAX   255
+#define SKILL_MIN   1
+#define SCORE_BOOST_FIG0 0.2
+#define SCORE_BOOST_FIG2 0.3
+
 char valid_keys[64] = VALID_KEYS;
 note_t touches[MAX_NKEY] = {0};
-static volatile alt_u8* vga_ctrl = 0x100;
 
-int nmpure = 0, npure = 0, nfar = 0, nlost = 0, ntouch = 0;
-int score = 0, combo = 0, maxcombo = 0, nkey = NKEY, tnkey = NKEY;
-float acc = 0, tacc;
+int nmpure, npure, nfar, nlost, ntouch;
+int score, score_base, score_boost;
+int combo, maxcombo, nkey, tnkey;
+float acc, tacc;
+
+uint8_t gst_state = GST_IDLE, gst_fig = 0;
+uint8_t life, skill; // odd = OFF, even = ON
 
 
 
@@ -87,9 +113,19 @@ float acc = 0, tacc;
 #define PHASE_IDLE  0
 #define PHASE_ENTER 1
 #define PHASE_EXIT  2
-#define NREG    	64
-#define KEYCODE_MIN 5
-#define KEYCODE_MAX 55
+
+#define NREG            64
+#define KEYCODE_MIN     5
+#define KEYCODE_MAX     55
+#define KEYCODE_GST     48
+#define KEYCODE_LFE     49
+#define KEYCODE_SKL     50
+
+#define KEYCODE_ENTER   40
+#define KEYCODE_ESC     41
+#define KEYCODE_LEFT    80
+#define KEYCODE_RIGHT   79
+#define KEYCODE_SPACE   44
 
 typedef struct {
 	uint8_t nsize;
@@ -100,6 +136,7 @@ typedef struct {
 } keystat_t;
 
 keystat_t keystats[NREG];
+static volatile alt_u8* vga_ctrl = (alt_u8*)0x100;
 
 
 
@@ -116,8 +153,8 @@ do {							\
 #define ROUND(num) (int)((num) + 0.5)
 
 #define LOG(time, msg, key) \
-	printf("[Time %5d | Score %08d, Accuracy %5.2f%% | Pure %4d, Far %4d, Lost %4d, Combo %4d] %s %c\n", \
-	(time), score, acc * 100, nmpure + npure, nfar, nlost, combo, (msg), (key));
+	printf("[Time %5d | Score %08d, Accuracy %5.2f%% | Pure %4d, Far %4d, Lost %4d, Combo %4d, Life %3d, Skill %3d] %s %c\n", \
+	(time), score, acc * 100, nmpure + npure, nfar, nlost, combo, life, skill, (msg), (key));
 
 
 #endif

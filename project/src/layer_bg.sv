@@ -36,7 +36,7 @@ module rom_bg (
 	input  logic [16:0] addr,
 	output logic [ 7:0] data);
 
-	logic [7:0] memory [0:68159] /* synthesis ram_init_file = "./sprite/sprite_bg.mif" */;
+	logic [7:0] memory [0:68159] /* synthesis ram_init_file = "./media/sprite_bg.mif" */;
 
 	always_ff @ (posedge clk) begin
 		data <= memory[addr];

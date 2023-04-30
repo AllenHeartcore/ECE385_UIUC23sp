@@ -40,7 +40,7 @@ module rom_fig (
 	input  logic [16:0] addr,
 	output logic [ 5:0] data);
 
-	logic [5:0] memory [0:131071] /* synthesis ram_init_file = "./sprite/sprite_fig.mif" */;
+	logic [5:0] memory [0:131071] /* synthesis ram_init_file = "./media/sprite_fig.mif" */;
 
 	always_ff @ (posedge clk) begin
 		data <= memory[addr];
