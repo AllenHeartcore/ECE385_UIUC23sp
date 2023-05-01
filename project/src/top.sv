@@ -29,7 +29,7 @@ module ece385proj (
 	logic SPI_CS_N, SPI_SCLK, SPI_MISO, SPI_MOSI;
 	logic USB_GPX, USB_IRQ, USB_RST;
 	logic I2S_SCLK, I2S_LRCLK, I2S_DIN, I2S_DOUT;
-	logic [ 1:0] aud_mclk_ctr;
+	logic [ 1:0] mclk_ctr;
 	logic [23:0] hexnum;
 
 	assign ARDUINO_IO[15:1] = {
@@ -37,7 +37,7 @@ module ece385proj (
 		i2c_serial_sda_oe ? 1'b0 : 1'bZ,
 		SPI_SCLK, 1'bZ, SPI_MOSI, SPI_CS_N,
 		1'bZ, 1'bZ, USB_RST, 1'b1,
-		1'bZ, 1'bZ, aud_mclk_ctr[1], I2S_DIN, 1'bZ};
+		1'bZ, 1'bZ, mclk_ctr[1], I2S_DIN, 1'bZ};
 
 	assign ARDUINO_RESET_N   = USB_RST;
 	assign i2c_serial_scl_in = ARDUINO_IO[15];
@@ -50,13 +50,11 @@ module ece385proj (
 	assign USB_GPX   = 1'b0;
 
 	always_ff @ (posedge MAX10_CLK2_50) begin
-		aud_mclk_ctr <= aud_mclk_ctr + 2'd1;
+		mclk_ctr <= mclk_ctr + 2'd1;
 	end
 
 
 	HexDriver hexdriver[6] (hexnum, {HEX5, HEX4, HEX3, HEX2, HEX1, HEX0});
-
-	I2S i2s (.SCLK(I2S_SCLK), .LRCLK(I2S_LRCLK), .DIN(I2S_DIN), .DOUT(I2S_DOUT));
 
 	proj_soc m_proj_soc (
 		.clk_clk(MAX10_CLK1_50),
@@ -95,7 +93,12 @@ module ece385proj (
 		.i2c_serial_scl_in,
 		.i2c_serial_scl_oe,
 		.i2c_serial_sda_in,
-		.i2c_serial_sda_oe);
+		.i2c_serial_sda_oe,
+
+		.i2s_port_sclk(I2S_SCLK),
+		.i2s_port_lrclk(I2S_LRCLK),
+		.i2s_port_din(I2S_DIN),
+		.i2s_port_dout(I2S_DOUT));
 
 
 endmodule

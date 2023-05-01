@@ -117,9 +117,16 @@ uint8_t life, skill; // odd = OFF, even = ON
 #define NREG            64
 #define KEYCODE_MIN     5
 #define KEYCODE_MAX     55
-#define KEYCODE_GST     48
 #define KEYCODE_LFE     49
 #define KEYCODE_SKL     50
+#define KEYCODE_SDRAM_ADDR  40
+#define KEYCODE_SDRAM_DATA  43
+
+#define KEYCODE_FLG     48
+#define FLGMASK_PLY     0x80
+#define FLGMASK_REQ     0x40
+#define FLGMASK_ACK     0x20
+#define FLGMASK_VLD     0x10
 
 #define KEYCODE_ENTER   40
 #define KEYCODE_ESC     41
@@ -135,8 +142,10 @@ typedef struct {
 	int timestamp;
 } keystat_t;
 
+int sdram_addr;
 keystat_t keystats[NREG];
-static volatile alt_u8* vga_ctrl = (alt_u8*)0x100;
+static volatile alt_u8* vga_ctrl = (alt_u8*)VGA_CANVAS_BASE;
+static volatile alt_u8* sdram_base = (alt_u8*)SDRAM_BASE;
 
 
 

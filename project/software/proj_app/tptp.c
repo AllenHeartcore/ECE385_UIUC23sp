@@ -16,7 +16,9 @@
 #include "usb_kb/USB.h"
 #include "audio/GenericTypeDefs.h"
 #include "audio/sgtl5000.h"
+
 #include "tptp.h"
+#include "audiofile.h"
 
 
 extern HID_DEVICE hid_device;
@@ -64,7 +66,6 @@ BYTE GetDriverandReport() {
 	return device;
 }
 
-
 void setScoreHex() {
 	BYTE digit;
 	int value = score;
@@ -80,9 +81,39 @@ void setScoreHex() {
 	IOWR_ALTERA_AVALON_PIO_DATA(PIO_HEX_BASE, pio_val);
 }
 
+void handleSDRAMRequest() {
+	BYTE tmp = vga_ctrl[KEYCODE_FLG];
+	if (tmp & FLGMASK_REQ) {	// request!
+		tmp &= ~FLGMASK_REQ;	// clear REQ
+		tmp |= FLGMASK_ACK;		// ACK request
+		tmp &= ~FLGMASK_VLD;	// data not VLD
+		vga_ctrl[KEYCODE_FLG] = tmp;
+		sdram_addr =  (vga_ctrl[KEYCODE_SDRAM_ADDR]) |
+			(vga_ctrl[KEYCODE_SDRAM_ADDR + 1] <<  8) |
+			(vga_ctrl[KEYCODE_SDRAM_ADDR + 2] << 16);
+		vga_ctrl[KEYCODE_SDRAM_DATA] = sdram_base[sdram_addr];
+		tmp &= ~FLGMASK_ACK;	// clear ACK
+		tmp |= FLGMASK_VLD;		// data VLD
+		vga_ctrl[KEYCODE_FLG] = tmp;
+		if (sdram_addr & 0x000000FF == 0)
+			printf("SDRAM read: %X\n", sdram_addr);
+	}
+}
+
+
+/* -------------------- Gamestate Regs -------------------- */
+
+void audioPlay() {
+	vga_ctrl[KEYCODE_FLG] |= FLGMASK_PLY;
+}
+
+void audioStop() {
+	vga_ctrl[KEYCODE_FLG] &= ~FLGMASK_PLY;
+}
 
 void setGamestateReg() {
-	vga_ctrl[KEYCODE_GST] = (BYTE) (gst_state | (gst_fig & 0x03));
+	BYTE tmp = vga_ctrl[KEYCODE_FLG] & 0xF0;
+	vga_ctrl[KEYCODE_FLG] = tmp | gst_state | (gst_fig & 0x03);
 }
 
 void setLifeReg() {
@@ -109,6 +140,8 @@ void deltaSkill(int8_t delta) {
 	setSkillReg();
 }
 
+
+/* -------------------- Scorekeeper Regs -------------------- */
 
 void setKeyReg(int idx) {
 	vga_ctrl[idx] = (BYTE) (
@@ -160,7 +193,6 @@ void setLostRegs() {
 	setComboReg();
 }
 
-
 void setPureFarScorekeepers(int error, char *msg) {
 
 	float dscore_boost = 0.0;
@@ -211,6 +243,8 @@ void setLostScorekeepers() {
 }
 
 
+/* -------------------- Keystat Maintenence -------------------- */
+
 void setEnterKeystat(int idx, int timestamp) {
 	keystats[idx].brght = BRIGHTEST;
 	keystats[idx].color = COLOR_TOUCH;
@@ -255,7 +289,8 @@ void setLostKeystat(int idx) {
 
 void updateKeystats() {
 	for (int i = KEYCODE_MIN; i < KEYCODE_MAX; i++) {
-		if (i == KEYCODE_GST || i == KEYCODE_LFE || i == KEYCODE_SKL)
+		if (i == KEYCODE_FLG || i == KEYCODE_LFE || i == KEYCODE_SKL
+			|| (i >= KEYCODE_SDRAM_ADDR && i <= KEYCODE_SDRAM_DATA))
 			continue;
 		setKeyReg(i);
 
@@ -285,6 +320,8 @@ void updateKeystats() {
 	}
 }
 
+
+/* -------------------- Main Game Logic -------------------- */
 
 note_t pop_note(note_t *chart, int idx, int *nkey) {
 	note_t note = chart[idx];
@@ -335,6 +372,7 @@ void game_init() {
 	}
 
 	printf("------ TrapoTempo now starts ------\n");
+	audioPlay();
 }
 
 
@@ -344,6 +382,7 @@ void game() {
 
 	while (1) {
 		kbdPoll(&kbdbuf);
+		handleSDRAMRequest();
 
 		/* Touch */
 		for (int i = 0; i < 6; i++) {
@@ -441,6 +480,7 @@ void game() {
 			gst_state = GST_REPORT;
 			setMaxComboReg();
 			setGamestateReg();
+			audioStop();
 		}
 		updateKeystats();
 		deltaLife(DLIFE_TICK);
@@ -462,6 +502,8 @@ int main() {
 	USB_init();
 	printf("initializing SGTL5000...\n");
 	SGTL5000_init();
+	printf("writing audio file to SDRAM...\n");
+	memcpy((void *)sdram_base, audarr, sizeof(audarr));
 
 	while (1) {
 		MAX3421E_Task();

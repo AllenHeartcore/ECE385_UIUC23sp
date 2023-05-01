@@ -1,14 +1,18 @@
 `include "utils.sv"
 
 
-module VGACanvas (
+module Game (
 	input  logic clk, reset,
 	input  logic avl_rden, avl_wren, avl_cs,
 	input  logic [5:0] avl_addr,
 	input  logic [7:0] avl_wdata,
 	output logic [7:0] avl_rdata,
+
 	output logic [3:0] red, green, blue,
-	output logic hs, vs);
+	output logic hs, vs,
+
+	input  logic sclk, lrclk, dout,
+	output logic din);
 
 
 	/* [Register Arrangement]
@@ -18,20 +22,28 @@ module VGACanvas (
 	 * 0x10 - 0x17: | M | N | O | P |   | R | S | T |
 	 * 0x18 - 0x1F: | U | V | W | X | Y |   |   | 2 |
 	 * 0x20 - 0x27: | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 0 |
-	 * 0x28 - 0x2F: |   |   |   |   |   | - | = | [ |
-	 * 0x30 - 0x37: |GST|LFE|SKL| ; |   |   | , | . |
+	 * 0x28 - 0x2F: |SDRAM_ADDR |DAT|   | - | = | [ |
+	 * 0x30 - 0x37: |FLG|LFE|SKL| ; |   |   | , | . |
 	 * 0x38 - 0x3F: | NPURE | NFAR  | NLOST | NCOMBO|
 	 *
 	 * ["keystat" Register Format]
 	 * | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 |
 	 * |   BRGHT   | COLOR |   NSIZE   |
+	 *
+	 * ["flags" Register Format]
+	 * | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 |
+	 * |PLY|REQ|ACK|VLD| STATE |  FIG  |
 	 */
 
 	logic [ 7:0] keystat[51];
 	logic [23:0] score;
 	logic [15:0] acc, npure, nfar, nlost, ncombo;
-	logic [ 1:0] gst_state, gst_fig;
 	logic [ 7:0] life, skill;
+
+	logic [23:0] sdram_addr;
+	logic [ 7:0] sdram_data;
+	logic [ 1:0] gst_state, gst_fig;
+	logic audio_play, sdram_req, sdram_ack, sdram_valid;
 
 	always_ff @ (posedge clk) begin
 
@@ -50,14 +62,22 @@ module VGACanvas (
 				6'h3D: avl_rdata <= nlost [15: 8];
 				6'h3E: avl_rdata <= ncombo[ 7: 0];
 				6'h3F: avl_rdata <= ncombo[15: 8];
-				6'h30: avl_rdata <= {4'b0, gst_state, gst_fig};
+
+				6'h28: avl_rdata <= sdram_addr[ 7: 0];
+				6'h29: avl_rdata <= sdram_addr[15: 8];
+				6'h2A: avl_rdata <= sdram_addr[23:16];
+				6'h2B: avl_rdata <= sdram_data;
+				6'h30: avl_rdata <= {audio_play, sdram_req,
+					sdram_ack, sdram_valid, gst_state, gst_fig};
 				6'h31: avl_rdata <= life;
 				6'h32: avl_rdata <= skill;
+
 				default: avl_rdata <= keystat[avl_addr - 6'h05];
 			endcase
 
 		else if (avl_cs && avl_wren)
 			case (avl_addr)
+
 				6'h00: score [ 7: 0] <= avl_wdata;
 				6'h01: score [15: 8] <= avl_wdata;
 				6'h02: score [23:16] <= avl_wdata;
@@ -71,12 +91,24 @@ module VGACanvas (
 				6'h3D: nlost [15: 8] <= avl_wdata;
 				6'h3E: ncombo[ 7: 0] <= avl_wdata;
 				6'h3F: ncombo[15: 8] <= avl_wdata;
-				6'h30: {gst_state, gst_fig} <= avl_wdata[3:0];
-				6'h31: life <= avl_wdata;
+
+				6'h28: sdram_addr[ 7: 0] <= avl_wdata;
+				6'h29: sdram_addr[15: 8] <= avl_wdata;
+				6'h2A: sdram_addr[23:16] <= avl_wdata;
+				6'h2B: sdram_data <= avl_wdata;
+				6'h30: {audio_play, sdram_req, sdram_ack,
+					sdram_valid, gst_state, gst_fig} <= avl_wdata;
+				6'h31: life  <= avl_wdata;
 				6'h32: skill <= avl_wdata;
+
 				default: keystat[avl_addr - 6'h05] <= avl_wdata;
 			endcase
 	end
+
+
+	I2S i2s (.sclk, .lrclk, .din, .dout,
+		.addr(sdram_addr), .sample(sdram_data), .play(audio_play),
+		.req(sdram_req), .ack(sdram_ack), .valid(sdram_valid));
 
 
 	/* Canvas Formatter */
