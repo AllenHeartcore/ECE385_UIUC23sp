@@ -117,7 +117,7 @@ void setGamestateReg() {
 }
 
 void setLifeReg() {
-	vga_ctrl[KEYCODE_LFE] = (BYTE) life;
+	game_ctrl[KEYCODE_LFE] = life < LIFE_MIN ? LIFE_MIN : life;
 }
 
 void setSkillReg() {
@@ -128,7 +128,7 @@ void deltaLife(int8_t delta) {
 	if (delta > 0)
 		life = (life + delta > LIFE_MAX) ? LIFE_MAX : life + delta;
 	else
-		life = (life + delta < LIFE_MIN) ? LIFE_MIN : life + delta;
+		life += delta;	// let it be, overflow handled by setLifeReg()
 	setLifeReg();
 }
 
@@ -433,7 +433,10 @@ void game() {
 
 		if (gst_state != GST_PLAY) continue;
 
-		if (nkey && life > 0) {
+		deltaLife(DLIFE_TICK);
+		if (!(skill & 0x1)) deltaSkill(DSKILL_TICK);
+
+		if (nkey && life > LIFE_MIN) {
 			gettimeofday(&now, NULL);
 			gametime = ROUND((now.tv_sec - start.tv_sec) * 500 +
 							(now.tv_usec - start.tv_usec) / 2000);
@@ -482,9 +485,8 @@ void game() {
 			setGamestateReg();
 			audioStop();
 		}
+
 		updateKeystats();
-		deltaLife(DLIFE_TICK);
-		if (!(skill & 0x1)) deltaSkill(DSKILL_TICK);
 	}
 }
 

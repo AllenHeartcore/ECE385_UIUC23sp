@@ -73,7 +73,7 @@ module layer_txt (
 			2'b11: begin
 				DrawXAnch = 7'd51;
 				case (DrawYCoord)
-					6'd12: {DrawXLim, CharIdxBase} = life != 0 ? {7'd66, 9'd303} : {7'd67, 9'd318};
+					6'd12: {DrawXLim, CharIdxBase} = life > 0 ? {7'd66, 9'd303} : {7'd67, 9'd318};
 					6'd13: {DrawXLim, CharIdxBase} = {7'd69, 9'd334};
 					6'd14: {DrawXLim, CharIdxBase} = {7'd69, 9'd352};
 					6'd15: {DrawXLim, CharIdxBase} = {7'd69, 9'd370};

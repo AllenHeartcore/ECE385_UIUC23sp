@@ -14,8 +14,6 @@
 /* Statistics & Timing */
 
 #define MAX_NKEY	65535
-#define MAX_LPHRASE	1024
-#define MAGIC_TPCH	0x48435054
 #define MAX_SCORE	10000000
 #define THRES_PURE	50	// 100 ms
 #define THRES_FAR	100	// 200 ms
@@ -83,7 +81,7 @@ note_t chart_storage[NKEY] = {
 
 #define DSKILL_PURE 24
 #define DSKILL_FAR  12
-#define DSKILL_TICK -4
+#define DSKILL_TICK -8
 #define SKILL_MAX   255
 #define SKILL_MIN   1
 #define SCORE_BOOST_FIG0 0.2
@@ -98,7 +96,7 @@ int combo, maxcombo, nkey, tnkey;
 float acc, tacc;
 
 uint8_t gst_state = GST_IDLE, gst_fig = 0;
-uint8_t life, skill; // odd = OFF, even = ON
+int16_t life, skill; // odd = OFF, even = ON
 
 
 
@@ -117,16 +115,13 @@ uint8_t life, skill; // odd = OFF, even = ON
 #define NREG            64
 #define KEYCODE_MIN     5
 #define KEYCODE_MAX     55
+#define KEYCODE_FLG     48
 #define KEYCODE_LFE     49
 #define KEYCODE_SKL     50
 #define KEYCODE_SDRAM_ADDR  40
 #define KEYCODE_SDRAM_DATA  43
 
-#define KEYCODE_FLG     48
-#define FLGMASK_PLY     0x80
-#define FLGMASK_REQ     0x40
-#define FLGMASK_ACK     0x20
-#define FLGMASK_VLD     0x10
+#define FLGMASK_PLY     0x10
 
 #define KEYCODE_ENTER   40
 #define KEYCODE_ESC     41
@@ -142,9 +137,9 @@ typedef struct {
 	int timestamp;
 } keystat_t;
 
-int sdram_addr;
+int sdram_addr, sdram_addr_prev;
 keystat_t keystats[NREG];
-static volatile alt_u8* vga_ctrl = (alt_u8*)VGA_CANVAS_BASE;
+static volatile alt_u8* game_ctrl  = (alt_u8*)GAME_BASE;
 static volatile alt_u8* sdram_base = (alt_u8*)SDRAM_BASE;
 
 
