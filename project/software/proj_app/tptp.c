@@ -88,14 +88,14 @@ void handleSDRAMRequest() {
 		tmp |= FLGMASK_ACK;		// ACK request
 		tmp &= ~FLGMASK_VLD;	// data not VLD
 		vga_ctrl[KEYCODE_FLG] = tmp;
-		sdram_addr =  (vga_ctrl[KEYCODE_SDRAM_ADDR]) |
-			(vga_ctrl[KEYCODE_SDRAM_ADDR + 1] <<  8) |
-			(vga_ctrl[KEYCODE_SDRAM_ADDR + 2] << 16);
-		vga_ctrl[KEYCODE_SDRAM_DATA] = sdram_base[sdram_addr];
 		tmp &= ~FLGMASK_ACK;	// clear ACK
 		tmp |= FLGMASK_VLD;		// data VLD
 		vga_ctrl[KEYCODE_FLG] = tmp;
 		if (sdram_addr & 0x000000FF == 0)
+	int sdram_addr = (game_ctrl[KEYCODE_SDRAM_ADDR]) |
+		(game_ctrl[KEYCODE_SDRAM_ADDR + 1] <<  8) |
+		(game_ctrl[KEYCODE_SDRAM_ADDR + 2] << 16);
+		game_ctrl[KEYCODE_SDRAM_DATA] = sdram_base[sdram_addr];
 			printf("SDRAM read: %X\n", sdram_addr);
 	}
 }
@@ -104,16 +104,16 @@ void handleSDRAMRequest() {
 /* -------------------- Gamestate Regs -------------------- */
 
 void audioPlay() {
-	vga_ctrl[KEYCODE_FLG] |= FLGMASK_PLY;
+	game_ctrl[KEYCODE_FLG] |= FLGMASK_PLY;
 }
 
 void audioStop() {
-	vga_ctrl[KEYCODE_FLG] &= ~FLGMASK_PLY;
+	game_ctrl[KEYCODE_FLG] &= ~FLGMASK_PLY;
 }
 
 void setGamestateReg() {
-	BYTE tmp = vga_ctrl[KEYCODE_FLG] & 0xF0;
-	vga_ctrl[KEYCODE_FLG] = tmp | gst_state | (gst_fig & 0x03);
+	BYTE tmp = game_ctrl[KEYCODE_FLG] & 0xF0;
+	game_ctrl[KEYCODE_FLG] = tmp | gst_state | (gst_fig & 0x03);
 }
 
 void setLifeReg() {
@@ -121,7 +121,7 @@ void setLifeReg() {
 }
 
 void setSkillReg() {
-	vga_ctrl[KEYCODE_SKL] = (BYTE) skill;
+	game_ctrl[KEYCODE_SKL] = (BYTE) skill;
 }
 
 void deltaLife(int8_t delta) {
@@ -144,7 +144,7 @@ void deltaSkill(int8_t delta) {
 /* -------------------- Scorekeeper Regs -------------------- */
 
 void setKeyReg(int idx) {
-	vga_ctrl[idx] = (BYTE) (
+	game_ctrl[idx] = (BYTE) (
 		(keystats[idx].brght & 0x7) << 5 |
 		(keystats[idx].color & 0x3) << 3 |
 		(keystats[idx].nsize & 0x7)
@@ -152,42 +152,42 @@ void setKeyReg(int idx) {
 }
 
 void setScoreReg() {
-	vga_ctrl[0]  = (BYTE) ( score & 0xFF);
-	vga_ctrl[1]  = (BYTE) ((score >> 8) & 0xFF);
-	vga_ctrl[2]  = (BYTE) ((score >> 16) & 0xFF);
+	game_ctrl[0]  = (BYTE) ( score & 0xFF);
+	game_ctrl[1]  = (BYTE) ((score >> 8) & 0xFF);
+	game_ctrl[2]  = (BYTE) ((score >> 16) & 0xFF);
 	setScoreHex();
 }
 
 void setAccReg() {
 	int pacc = (int) (acc * 0xFFFF);
-	vga_ctrl[3]  = (BYTE) ( pacc & 0xFF);
-	vga_ctrl[4]  = (BYTE) ((pacc >> 8) & 0xFF);
+	game_ctrl[3]  = (BYTE) ( pacc & 0xFF);
+	game_ctrl[4]  = (BYTE) ((pacc >> 8) & 0xFF);
 }
 
 void setComboReg() {
-	vga_ctrl[62] = (BYTE) ( combo & 0xFF);
-	vga_ctrl[63] = (BYTE) ((combo >> 8) & 0xFF);
+	game_ctrl[62] = (BYTE) ( combo & 0xFF);
+	game_ctrl[63] = (BYTE) ((combo >> 8) & 0xFF);
 }
 
 void setMaxComboReg() {
-	vga_ctrl[62] = (BYTE) ( maxcombo & 0xFF);
-	vga_ctrl[63] = (BYTE) ((maxcombo >> 8) & 0xFF);
+	game_ctrl[62] = (BYTE) ( maxcombo & 0xFF);
+	game_ctrl[63] = (BYTE) ((maxcombo >> 8) & 0xFF);
 }
 
 void setPureFarRegs() {
 	int npuret = nmpure + npure;
-	vga_ctrl[56] = (BYTE) ( npuret & 0xFF);
-	vga_ctrl[57] = (BYTE) ((npuret >> 8) & 0xFF);
-	vga_ctrl[58] = (BYTE) ( nfar & 0xFF);
-	vga_ctrl[59] = (BYTE) ((nfar >> 8) & 0xFF);
+	game_ctrl[56] = (BYTE) ( npuret & 0xFF);
+	game_ctrl[57] = (BYTE) ((npuret >> 8) & 0xFF);
+	game_ctrl[58] = (BYTE) ( nfar & 0xFF);
+	game_ctrl[59] = (BYTE) ((nfar >> 8) & 0xFF);
 	setScoreReg();
 	setAccReg();
 	setComboReg();
 }
 
 void setLostRegs() {
-	vga_ctrl[60] = (BYTE) ( nlost & 0xFF);
-	vga_ctrl[61] = (BYTE) ((nlost >> 8) & 0xFF);
+	game_ctrl[60] = (BYTE) ( nlost & 0xFF);
+	game_ctrl[61] = (BYTE) ((nlost >> 8) & 0xFF);
 	setScoreReg();
 	setAccReg();
 	setComboReg();
