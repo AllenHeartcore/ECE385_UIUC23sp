@@ -12,8 +12,6 @@
 extern BYTE usb_task_state;
 void SPI_init(BYTE sync_mode, BYTE bus_mode, BYTE smp_phase) {
 }
-BYTE SPI_wr(BYTE data) {
-}
 void MAXreg_wr(BYTE reg, BYTE val) {
 	alt_u8 wbuf[2] = {reg + 2, val};
 	if (alt_avalon_spi_command(SPI_BASE, 0, 2, wbuf, 0, NULL, 0) < 0)
@@ -144,6 +142,5 @@ void MaxIntHandler(void) {
 	MAXreg_wr( rHIRQ, HIRQ_sendback);
 }
 void MaxGpxHandler(void) {
-	BYTE GPINIRQ;
-	GPINIRQ = MAXreg_rd( rGPINIRQ);
+	MAXreg_rd( rGPINIRQ);
 }

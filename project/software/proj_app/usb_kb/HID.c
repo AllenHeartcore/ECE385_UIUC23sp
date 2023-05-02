@@ -2,8 +2,8 @@
 #include "../usb_kb/project_config.h"
 BYTE bigbuf[256];
 extern DEV_RECORD devtable[];
-HID_DEVICE hid_device = { { 0 } };
-EP_RECORD hid_ep[2] = { { 0 } };
+HID_DEVICE hid_device = { 0 };
+EP_RECORD hid_ep[2] = { 0 };
 BOOL HIDMProbe(BYTE addr, DWORD flags) {
 	BYTE tmpbyte;
 	BYTE rcode;

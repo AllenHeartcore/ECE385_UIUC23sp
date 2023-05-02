@@ -1,9 +1,10 @@
 #define _transfer_c_
+#include <stdio.h>
 #include "../usb_kb/project_config.h"
 #include "altera_avalon_timer.h"
 #include "sys/alt_alarm.h"
-EP_RECORD dev0ep = {{ 0 }};
-EP_RECORD msd_ep[ 3 ] = {{ 0 }};
+EP_RECORD dev0ep = { 0 };
+EP_RECORD msd_ep[ 3 ] = { 0 };
 #define INIT_VID_PID(v,p) 0x##p##v
 #define INIT_CL_SC_P(c,s,p) 0x##00##p##s##c
 const CTRL_XFER ctrl_xfers[ 2 ] = {
@@ -137,8 +138,6 @@ BYTE XferDispatchPkt( BYTE token, BYTE ep )
 BYTE XferInTransfer( BYTE addr/* not sure if it's necessary */, BYTE ep, WORD nbytes, BYTE* data, BYTE maxpktsize )
 {
  BYTE rcode;
- BYTE i;
- BYTE tmpbyte;
  BYTE pktsize;
  WORD xfrlen = 0;
 	MAXreg_wr( rHCTL, devtable[ addr ].epinfo[ ep ].rcvToggle );

@@ -160,7 +160,6 @@
 #define MODE_FS_HOST	(bmDPPULLDN|bmDMPULLDN|bmHOST|bmSOFKAENAB)
 #define MODE_LS_HOST	(bmDPPULLDN|bmDMPULLDN|bmHOST|bmLOWSPEED|bmSOFKAENAB)
 void SPI_init(BYTE sync_mode, BYTE bus_mode, BYTE smp_phase);
-BYTE SPI_wr(BYTE data);
 void MAXreg_wr(BYTE reg, BYTE val);
 BYTE* MAXbytes_wr(BYTE reg, BYTE nbytes, BYTE * data);
 BYTE MAXreg_rd(BYTE reg);
