@@ -16,9 +16,7 @@
 #include "usb_kb/USB.h"
 #include "audio/GenericTypeDefs.h"
 #include "audio/sgtl5000.h"
-
 #include "tptp.h"
-#include "audiofile.h"
 
 
 extern HID_DEVICE hid_device;
@@ -82,20 +80,13 @@ void setScoreHex() {
 }
 
 void handleSDRAMRequest() {
-	BYTE tmp = vga_ctrl[KEYCODE_FLG];
-	if (tmp & FLGMASK_REQ) {	// request!
-		tmp &= ~FLGMASK_REQ;	// clear REQ
-		tmp |= FLGMASK_ACK;		// ACK request
-		tmp &= ~FLGMASK_VLD;	// data not VLD
-		vga_ctrl[KEYCODE_FLG] = tmp;
-		tmp &= ~FLGMASK_ACK;	// clear ACK
-		tmp |= FLGMASK_VLD;		// data VLD
-		vga_ctrl[KEYCODE_FLG] = tmp;
-		if (sdram_addr & 0x000000FF == 0)
 	int sdram_addr = (game_ctrl[KEYCODE_SDRAM_ADDR]) |
 		(game_ctrl[KEYCODE_SDRAM_ADDR + 1] <<  8) |
 		(game_ctrl[KEYCODE_SDRAM_ADDR + 2] << 16);
+	if (sdram_addr != sdram_addr_prev) {
+		sdram_addr_prev = sdram_addr;
 		game_ctrl[KEYCODE_SDRAM_DATA] = sdram_base[sdram_addr];
+		if ((sdram_addr & 0x0000FFFF) == 0)
 			printf("SDRAM read: %X\n", sdram_addr);
 	}
 }
@@ -504,8 +495,6 @@ int main() {
 	USB_init();
 	printf("initializing SGTL5000...\n");
 	SGTL5000_init();
-	printf("writing audio file to SDRAM...\n");
-	memcpy((void *)sdram_base, audarr, sizeof(audarr));
 
 	while (1) {
 		MAX3421E_Task();

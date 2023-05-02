@@ -32,7 +32,7 @@ module Game (
 	 *
 	 * ["flags" Register Format]
 	 * | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 |
-	 * |PLY|REQ|ACK|VLD| STATE |  FIG  |
+	 * |   |   |   |PLY| STATE |  FIG  |
 	 */
 
 	logic [ 7:0] keystat[51];
@@ -43,7 +43,7 @@ module Game (
 	logic [23:0] sdram_addr;
 	logic [ 7:0] sdram_data;
 	logic [ 1:0] gst_state, gst_fig;
-	logic audio_play, sdram_req, sdram_ack, sdram_valid;
+	logic audio_play;
 
 	always_ff @ (posedge clk) begin
 
@@ -67,8 +67,7 @@ module Game (
 				6'h29: avl_rdata <= sdram_addr[15: 8];
 				6'h2A: avl_rdata <= sdram_addr[23:16];
 				6'h2B: avl_rdata <= sdram_data;
-				6'h30: avl_rdata <= {audio_play, sdram_req,
-					sdram_ack, sdram_valid, gst_state, gst_fig};
+				6'h30: avl_rdata <= {audio_play, gst_state, gst_fig};
 				6'h31: avl_rdata <= life;
 				6'h32: avl_rdata <= skill;
 
@@ -92,12 +91,8 @@ module Game (
 				6'h3E: ncombo[ 7: 0] <= avl_wdata;
 				6'h3F: ncombo[15: 8] <= avl_wdata;
 
-				6'h28: sdram_addr[ 7: 0] <= avl_wdata;
-				6'h29: sdram_addr[15: 8] <= avl_wdata;
-				6'h2A: sdram_addr[23:16] <= avl_wdata;
 				6'h2B: sdram_data <= avl_wdata;
-				6'h30: {audio_play, sdram_req, sdram_ack,
-					sdram_valid, gst_state, gst_fig} <= avl_wdata;
+				6'h30: {audio_play, gst_state, gst_fig} <= avl_wdata[4:0];
 				6'h31: life  <= avl_wdata;
 				6'h32: skill <= avl_wdata;
 
@@ -107,8 +102,7 @@ module Game (
 
 
 	I2S i2s (.sclk, .lrclk, .din, .dout,
-		.addr(sdram_addr), .sample(sdram_data), .play(audio_play),
-		.req(sdram_req), .ack(sdram_ack), .valid(sdram_valid));
+		.addr(sdram_addr), .sample(sdram_data), .play(audio_play));
 
 
 	/* Canvas Formatter */
