@@ -1,25 +1,6 @@
-# TrapoTempo: Rhythm on your Keyboard
+# Writing A TrapoScript
 
-## On The Game's Name
-
-- "Trapo" = **trapezoid**. <br> The game uses a trapezoidal area (a total of **42 keys**) on the keyboard:
-```
-    2 3 4 5 6 7 8 9 0 - =
-     w e r t y u i o p [
-      s d f g h j k l ;
-       x c v b n m , .
-```
-- "Tempo" = **rhythm**. Hey, the name rhymes! 
-
-## Related Files
-
-- TrapoScript (`.txt`): a human-readable **script** that specifies a chart for a song
-- TrapoChart (`.tpch`): a **chart** generated from a TrapoScript and ready to be played
-- TrapoPack (`.tptp`): an encrypted pack that contains an audio file and its TrapoChart
-
-## Writing A TrapoScript
-
-### **Terminology**
+## **Terminology**
 
 - *Phrase*: a continuous sequence of *beats* that form a "sentence" in music
 - *Beat*: a basic unit in music that contains exactly one stress; the "B" in "BPM" 
@@ -29,7 +10,7 @@
 
 In short, a *phrase* = multiple *beats*, a *beat* = multiple *ticks*, and *keys* **usually** fall on *ticks*. <br> A *phrase* string consists of *keys* and *markers*. 
 
-### **The Header**
+## **The Header**
 
 A valid TrapoScript header, on a separate first line, has the following format: 
 
@@ -43,7 +24,7 @@ A valid TrapoScript header, on a separate first line, has the following format:
 
 All four numbers should be **positive**. 
 
-### **The Body**
+## **The Body**
 
 The body of a TrapoScript contains several *phrase* strings of the **same number of *keys***, each on a line. 
 
@@ -80,7 +61,7 @@ You can nest and combine *markers* in (some) various ways (but not others):
 | Empty key inside Multihand | Yes | <code>{ee\`e\|o\`o\`}</code> |
 | Empty key inside Acceleration | Yes | <code><cv\`bn\`m,></code> |
 
-### **Putting It Together**
+## **Putting It Together**
 
 Here is a practical example of TrapoScript: 
 ```
@@ -103,7 +84,7 @@ in which
 - the first `|` starts at `60 / BPM * BOfst` = 0.15 s
 - and each `| |` represents `60 / BPM / TPB` = 0.125 s
 
-### **Misc. Specifications**
+## **Misc. Specifications**
 
 - Use Linefeed (`\n`) instead of Carriage Return (`\r`)
 - There should be **no** empty line in a TrapoScript, except that……
