@@ -6,24 +6,24 @@ module I2S (
 
 
 	logic [31:0] shiftreg;
-	logic [ 5:0] load_ctr;	// period = 64
+	logic loadflag, loadflag_curr, loadflag_prev;
 
 	always_ff @ (negedge lrclk) begin
+		loadflag <= ~loadflag;
 		if (!play) begin
-			addr <= 24'h000000;
+			addr <= 24'h0;
 		end else
-			addr <= addr + 1;
+			addr <= addr + 24'h1;
 	end
 
 
 	always_ff @ (posedge sclk) begin
-		if (load_ctr == 6'b000000) begin
-			shiftreg <= {1'b0, sample, 23'b0};
-			load_ctr <= 6'b000001;
-		end else begin
+		loadflag_curr <= loadflag;
+		loadflag_prev <= loadflag_curr;
+		if (!loadflag_curr & loadflag_prev)
+			shiftreg <= {1'b0, ~sample[7], sample[6:0], 23'b0};
+		else
 			shiftreg <= {shiftreg[30:0], shiftreg[31]};
-			load_ctr <= load_ctr + 1;
-		end
 	end
 
 	assign din = shiftreg[31];

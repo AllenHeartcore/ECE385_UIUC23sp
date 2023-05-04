@@ -181,7 +181,7 @@ note_t chart_storage[NKEY] = {
 #define DLIFE_TICK  1
 #define DLIFE_PURE  12
 #define DLIFE_FAR   6
-#define DLIFE_LOST  -16
+#define DLIFE_LOST  -8
 #define DLIFE_BOOST 75
 #define LIFE_MAX    255
 #define LIFE_MIN    0
