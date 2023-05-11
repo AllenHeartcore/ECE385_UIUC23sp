@@ -1,0 +1,37 @@
+<svg width="305" height="220" version="1.1" xmlns="http://www.w3.org/2000/svg">
+	<ellipse stroke="black" stroke-width="1" fill="none" cx="35" cy="35" rx="30" ry="30"/>
+	<ellipse stroke="black" stroke-width="1" fill="none" cx="185" cy="35" rx="30" ry="30"/>
+	<ellipse stroke="black" stroke-width="1" fill="none" cx="185" cy="185" rx="30" ry="30"/>
+	<ellipse stroke="black" stroke-width="1" fill="none" cx="35" cy="185" rx="30" ry="30"/>
+	<text x="14" y="41" font-family="Consolas" font-size="20">IDLE</text>
+	<text x="158" y="39" font-family="Consolas" font-size="16">CONFIG</text>
+	<text x="163" y="191" font-family="Consolas" font-size="20">PLAY</text>
+	<text x="9" y="190" font-family="Consolas" font-size="16">REPORT</text>
+	<polygon stroke="black" stroke-width="1" points="65,30 155,30"/>
+	<polygon fill="black" stroke-width="1" points="155,30 147,25 147,35"/>
+	<text x="88" y="25" font-family="Consolas" font-size="16">Enter</text>
+	<polygon stroke="black" stroke-width="1" points="185,65 185,155"/>
+	<polygon fill="black" stroke-width="1" points="185,155 190,147 180,147"/>
+	<text x="188" y="116" font-family="Consolas" font-size="16">Enter</text>
+	<polygon stroke="black" stroke-width="1" points="155,185 65,185"/>
+	<polygon fill="black" stroke-width="1" points="65,185 73,190 73,180"/>
+	<text x="77" y="200" font-family="Consolas" font-size="16">Win/Lose</text>
+	<polygon stroke="black" stroke-width="1" points="57,164 164,57"/>
+	<polygon fill="black" stroke-width="1" points="164,57 155,59 162,66"/>
+	<text x="65" y="165" font-family="Consolas" font-size="15">Enter</text>
+	<polygon stroke="black" stroke-width="1" points="155,40 65,40"/>
+	<polygon fill="black" stroke-width="1" points="65,40 73,45 73,35"/>
+	<text x="96" y="55" font-family="Consolas" font-size="16">Esc</text>
+	<polygon stroke="black" stroke-width="1" points="164,164 57,57"/>
+	<polygon fill="black" stroke-width="1" points="57,57 59,66 66,59"/>
+	<text x="132" y="165" font-family="Consolas" font-size="15">Esc</text>
+	<polygon stroke="black" stroke-width="1" points="35,155 35,65"/>
+	<polygon fill="black" stroke-width="1" points="35,65 30,73 40,73"/>
+	<text x="6" y="116" font-family="Consolas" font-size="16">Esc</text>
+	<path stroke="black" stroke-width="1" fill="none" d="M 212.297,22.2 A 22,22 0 1 1 212.297,48.7"/>
+	<polygon fill="black" stroke-width="1" points="212.297,48.7 215.83,57.473 221.708,49.382"/>
+	<path stroke="black" stroke-width="1" fill="none" d="M 212.297,22.2 A 22,22 0 1 1 212.297,48.7"/>
+	<text x="258" y="34" font-family="Consolas" font-size="16">Left</text>
+	<text x="258" y="48" font-family="Consolas" font-size="16">Right</text>
+	<polygon fill="black" stroke-width="1" points="212.297,48.7 215.83,57.473 221.708,49.382"/>
+</svg>
